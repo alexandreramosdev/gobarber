@@ -1,34 +1,40 @@
 import React, { useRef } from 'react';
+import { useDispatch } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { Form } from '@unform/web';
 import * as Yup from 'yup';
 
+import { signUpRequst } from '~/store/modules/auth/actions';
+
 import logo from '~/assets/images/logo.svg';
 import Input from '~/components/form/Input';
 
+const schema = Yup.object().shape({
+  name: Yup.string().required('O nome é obrigatório'),
+  email: Yup.string()
+    .email('Insira um e-mail válido')
+    .required('O email é obrigatório'),
+  password: Yup.string()
+    .min(6, 'No mínimo 6 caracteres')
+    .required('A senha é obrigatória'),
+});
+
 export default function SignUp() {
   const formRef = useRef(null);
+  const dispatch = useDispatch();
 
   const handleSubmit = async data => {
     try {
       // Remove all previous errors
       formRef.current.setErrors({});
-      const schema = Yup.object().shape({
-        name: Yup.string().required('O nome é obrigatório'),
-        email: Yup.string()
-          .email('Insira um e-mail válido')
-          .required('O email é obrigatório'),
-        password: Yup.string()
-          .min(6, 'No mínimo 6 caracteres')
-          .required('A senha é obrigatória'),
-      });
 
       await schema.validate(data, {
         abortEarly: false,
       });
 
-      // Validation passed
-      console.tron.log(data);
+      const { name, email, password } = data;
+
+      dispatch(signUpRequst(name, email, password));
     } catch (err) {
       const validationErrors = {};
       if (err instanceof Yup.ValidationError) {
