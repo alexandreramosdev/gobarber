@@ -85,6 +85,7 @@ class UserControler {
     return res.json({
       id,
       name,
+      email,
       avatar,
     });
   }
