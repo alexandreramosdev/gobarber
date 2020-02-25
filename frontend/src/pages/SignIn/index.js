@@ -1,18 +1,23 @@
 import React, { useRef } from 'react';
+import { useDispatch } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { Form } from '@unform/web';
 import * as Yup from 'yup';
+
+import { signInRequest } from '~/store/modules/auth/actions';
 
 import logo from '~/assets/images/logo.svg';
 import Input from '~/components/form/Input';
 
 export default function SignIn() {
   const formRef = useRef(null);
+  const dispatch = useDispatch();
 
   const handleSubmit = async data => {
     try {
       // Remove all previous errors
       formRef.current.setErrors({});
+
       const schema = Yup.object().shape({
         email: Yup.string()
           .email('Insira um e-mail válido')
@@ -26,8 +31,9 @@ export default function SignIn() {
         abortEarly: false,
       });
 
-      // Validation passed
-      console.tron.log(data);
+      const { email, password } = data;
+
+      dispatch(signInRequest(email, password));
     } catch (err) {
       const validationErrors = {};
       if (err instanceof Yup.ValidationError) {
